@@ -7,7 +7,7 @@
 #AutoIt3Wrapper_UseUpx=Y
 #AutoIt3Wrapper_Res_Comment=TempCleaner Pro - Optimizador de Sistema
 #AutoIt3Wrapper_Res_Description=Limpiador de archivos temporales
-#AutoIt3Wrapper_Res_Fileversion=1.0.0.0
+#AutoIt3Wrapper_Res_Fileversion=1.1.0.0
 #AutoIt3Wrapper_Res_ProductName=TempCleaner Pro
 #AutoIt3Wrapper_Res_CompanyName=Enoc Colomer
 #AutoIt3Wrapper_Res_LegalCopyright=© 2026 Enoc Colomer - MIT License
@@ -37,17 +37,21 @@ Opt('TrayMenuMode', 1)
 ; CONSTANTES Y VARIABLES GLOBALES
 ; ============================================
 Global Const $APP_NAME = "TempCleaner Pro"
-Global Const $APP_VERSION = "1.0.0"
+Global Const $APP_VERSION = "1.1.0"
 
-; Colores
-Global Const $COLOR_BG = 0x1E1E2E           ; Fondo oscuro
-Global Const $COLOR_BG_LIGHT = 0x2D2D3D     ; Fondo claro
-Global Const $COLOR_ACCENT = 0x7C3AED       ; Violeta
+; Colores - Paleta moderna
+Global Const $COLOR_BG = 0x0F0F1A           ; Fondo muy oscuro
+Global Const $COLOR_BG_LIGHT = 0x1A1A2E     ; Fondo secundario
+Global Const $COLOR_BG_CARD = 0x16213E      ; Fondo de tarjetas
+Global Const $COLOR_ACCENT = 0x7C3AED       ; Violeta principal
+Global Const $COLOR_ACCENT2 = 0x06B6D4      ; Cyan
 Global Const $COLOR_SUCCESS = 0x10B981      ; Verde
 Global Const $COLOR_WARNING = 0xF59E0B      ; Amarillo
 Global Const $COLOR_DANGER = 0xEF4444       ; Rojo
 Global Const $COLOR_TEXT = 0xFFFFFF         ; Texto blanco
 Global Const $COLOR_TEXT_DIM = 0x9CA3AF     ; Texto gris
+Global Const $COLOR_GRADIENT1 = 0x4F46E5    ; Indigo
+Global Const $COLOR_GRADIENT2 = 0x7C3AED    ; Violeta
 
 ; Variables de estado
 Global $totalFilesFound = 0
@@ -73,145 +77,195 @@ Main()
 ; FUNCIÓN PRINCIPAL - GUI
 ; ============================================
 Func Main()
-    ; Crear ventana principal
-    Local $hGUI = GUICreate($APP_NAME & " v" & $APP_VERSION, 500, 550, -1, -1, $WS_POPUP + $WS_BORDER)
+    ; Crear ventana principal más grande
+    Local $hGUI = GUICreate($APP_NAME & " v" & $APP_VERSION, 550, 620, -1, -1, $WS_POPUP + $WS_BORDER)
     GUISetBkColor($COLOR_BG)
 
     ; ========== HEADER ==========
+    ; Fondo del header
+    GUICtrlCreateLabel("", 0, 0, 550, 60)
+    GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
+
+    ; Icono/Logo
+    Local $lblIcon = GUICtrlCreateLabel("🧹", 15, 12, 40, 40)
+    GUICtrlSetFont(-1, 24, 400, 0, "Segoe UI Emoji")
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+
     ; Barra de título personalizada
-    Local $lblTitle = GUICtrlCreateLabel($APP_NAME, 20, 15, 350, 30)
+    Local $lblTitle = GUICtrlCreateLabel($APP_NAME, 55, 10, 300, 25)
     GUICtrlSetFont(-1, 16, 700, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Local $lblVersion = GUICtrlCreateLabel("v" & $APP_VERSION, 380, 20, 50, 20)
-    GUICtrlSetFont(-1, 9, 400, 0, "Segoe UI")
+    Local $lblSubtitle = GUICtrlCreateLabel("Optimizador de Sistema", 55, 35, 200, 18)
+    GUICtrlSetFont(-1, 9, 400, 2, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    ; Botón cerrar
-    Local $btnClose = GUICtrlCreateLabel("✕", 460, 10, 30, 30, $SS_CENTER)
-    GUICtrlSetFont(-1, 14, 400, 0, "Segoe UI")
-    GUICtrlSetColor(-1, $COLOR_TEXT)
-    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
-    GUICtrlSetCursor(-1, 0)
-
-    ; Línea separadora
-    GUICtrlCreateLabel("", 0, 50, 500, 2)
-    GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
-
-    ; ========== ESTADÍSTICAS ==========
-    Local $grpStats = GUICtrlCreateGroup("", 20, 60, 460, 100)
-    GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
-
-    Local $lblFilesTitle = GUICtrlCreateLabel("Archivos encontrados:", 40, 80, 150, 20)
-    GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
-    GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
-    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
-
-    Global $lblFilesCount = GUICtrlCreateLabel("0", 40, 100, 150, 30)
-    GUICtrlSetFont(-1, 20, 700, 0, "Segoe UI")
+    Local $lblVersion = GUICtrlCreateLabel("v" & $APP_VERSION, 420, 22, 60, 20)
+    GUICtrlSetFont(-1, 10, 600, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_ACCENT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Local $lblSizeTitle = GUICtrlCreateLabel("Espacio a liberar:", 280, 80, 150, 20)
+    ; Botón minimizar
+    Local $btnMin = GUICtrlCreateLabel("─", 480, 5, 25, 25, $SS_CENTER)
+    GUICtrlSetFont(-1, 12, 700, 0, "Segoe UI")
+    GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+    GUICtrlSetCursor(-1, 0)
+
+    ; Botón cerrar
+    Local $btnClose = GUICtrlCreateLabel("✕", 510, 5, 25, 25, $SS_CENTER)
+    GUICtrlSetFont(-1, 14, 400, 0, "Segoe UI")
+    GUICtrlSetColor(-1, $COLOR_DANGER)
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+    GUICtrlSetCursor(-1, 0)
+
+    ; ========== ESTADÍSTICAS ==========
+    ; Panel de estadísticas con fondo
+    GUICtrlCreateLabel("", 20, 75, 510, 110)
+    GUICtrlSetBkColor(-1, $COLOR_BG_CARD)
+
+    ; Icono de archivos
+    Local $lblFilesIcon = GUICtrlCreateLabel("📄", 35, 90, 30, 30)
+    GUICtrlSetFont(-1, 18, 400, 0, "Segoe UI Emoji")
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+
+    Local $lblFilesTitle = GUICtrlCreateLabel("Archivos encontrados", 65, 90, 160, 20)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Global $lblSizeCount = GUICtrlCreateLabel("0 MB", 280, 100, 180, 30)
-    GUICtrlSetFont(-1, 20, 700, 0, "Segoe UI")
+    Global $lblFilesCount = GUICtrlCreateLabel("0", 65, 110, 150, 40)
+    GUICtrlSetFont(-1, 28, 700, 0, "Segoe UI")
+    GUICtrlSetColor(-1, $COLOR_ACCENT2)
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+
+    ; Separador vertical
+    GUICtrlCreateLabel("", 270, 90, 2, 80)
+    GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
+
+    ; Icono de espacio
+    Local $lblSizeIcon = GUICtrlCreateLabel("💾", 290, 90, 30, 30)
+    GUICtrlSetFont(-1, 18, 400, 0, "Segoe UI Emoji")
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+
+    Local $lblSizeTitle = GUICtrlCreateLabel("Espacio a liberar", 320, 90, 160, 20)
+    GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
+    GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+
+    Global $lblSizeCount = GUICtrlCreateLabel("0 MB", 320, 110, 180, 40)
+    GUICtrlSetFont(-1, 28, 700, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_SUCCESS)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
     ; ========== OPCIONES DE LIMPIEZA ==========
-    Local $lblOptions = GUICtrlCreateLabel("¿Qué deseas limpiar?", 20, 175, 200, 25)
-    GUICtrlSetFont(-1, 12, 600, 0, "Segoe UI")
+    Local $lblOptions = GUICtrlCreateLabel("🛠️  ¿Qué deseas limpiar?", 20, 200, 250, 28)
+    GUICtrlSetFont(-1, 13, 600, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    ; Checkboxes
-    Global $chkTemp = GUICtrlCreateCheckbox(" Archivos temporales (%TEMP%)", 30, 205, 220, 25)
+    ; Panel izquierdo - Sistema
+    GUICtrlCreateLabel("", 20, 235, 250, 150)
+    GUICtrlSetBkColor(-1, $COLOR_BG_CARD)
+
+    Local $lblSystem = GUICtrlCreateLabel("🖥️  Sistema", 30, 245, 150, 22)
+    GUICtrlSetFont(-1, 11, 600, 0, "Segoe UI")
+    GUICtrlSetColor(-1, $COLOR_ACCENT)
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+
+    ; Checkboxes Sistema
+    Global $chkTemp = GUICtrlCreateCheckbox(" 📁 Temp (%TEMP%)", 35, 275, 220, 25)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
     GUICtrlSetState(-1, $GUI_CHECKED)
 
-    Global $chkWinTemp = GUICtrlCreateCheckbox(" Windows Temp", 30, 235, 220, 25)
+    Global $chkWinTemp = GUICtrlCreateCheckbox(" 🗃️ Windows Temp", 35, 305, 220, 25)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
     GUICtrlSetState(-1, $GUI_CHECKED)
 
-    Global $chkPrefetch = GUICtrlCreateCheckbox(" Prefetch (acelera Windows)", 30, 265, 220, 25)
+    Global $chkPrefetch = GUICtrlCreateCheckbox(" ⚡ Prefetch", 35, 335, 220, 25)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
     GUICtrlSetState(-1, $GUI_CHECKED)
 
-    Global $chkRecent = GUICtrlCreateCheckbox(" Archivos recientes", 30, 295, 220, 25)
+    Global $chkRecent = GUICtrlCreateCheckbox(" 📝 Recientes", 35, 365, 220, 25)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Global $chkChrome = GUICtrlCreateCheckbox(" Caché de Chrome", 270, 205, 200, 25)
+    ; Panel derecho - Navegadores
+    GUICtrlCreateLabel("", 280, 235, 250, 150)
+    GUICtrlSetBkColor(-1, $COLOR_BG_CARD)
+
+    Local $lblBrowsers = GUICtrlCreateLabel("🌐  Navegadores", 290, 245, 150, 22)
+    GUICtrlSetFont(-1, 11, 600, 0, "Segoe UI")
+    GUICtrlSetColor(-1, $COLOR_SUCCESS)
+    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+
+    Global $chkChrome = GUICtrlCreateCheckbox(" 🔵 Chrome", 295, 275, 220, 25)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Global $chkFirefox = GUICtrlCreateCheckbox(" Caché de Firefox", 270, 235, 200, 25)
+    Global $chkFirefox = GUICtrlCreateCheckbox(" 🧡 Firefox", 295, 305, 220, 25)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Global $chkIE = GUICtrlCreateCheckbox(" Caché de Internet Explorer", 270, 265, 200, 25)
+    Global $chkIE = GUICtrlCreateCheckbox(" 🔷 Internet Explorer", 295, 335, 220, 25)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Global $chkRecycle = GUICtrlCreateCheckbox(" Vaciar papelera", 270, 295, 200, 25)
+    Global $chkRecycle = GUICtrlCreateCheckbox(" 🗑️ Papelera", 295, 365, 220, 25)
     GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
     ; ========== BARRA DE PROGRESO ==========
-    GUICtrlCreateLabel("", 20, 340, 460, 2)
+    GUICtrlCreateLabel("", 20, 400, 510, 2)
     GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
 
-    Global $lblStatus = GUICtrlCreateLabel("Listo para escanear", 20, 355, 460, 20)
-    GUICtrlSetFont(-1, 10, 400, 0, "Segoe UI")
+    Global $lblStatus = GUICtrlCreateLabel("✨ Listo para escanear", 20, 415, 510, 22)
+    GUICtrlSetFont(-1, 11, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Global $progressBar = GUICtrlCreateProgress(20, 380, 460, 20, $PBS_SMOOTH)
+    Global $progressBar = GUICtrlCreateProgress(20, 445, 510, 25, $PBS_SMOOTH)
     GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
 
     ; ========== BOTONES ==========
-    Global $btnScan = GUICtrlCreateButton("🔍 ESCANEAR", 20, 420, 220, 50)
-    GUICtrlSetFont(-1, 12, 700, 0, "Segoe UI")
+    Global $btnScan = GUICtrlCreateButton("🔍  ESCANEAR", 20, 485, 250, 55)
+    GUICtrlSetFont(-1, 13, 700, 0, "Segoe UI")
     GUICtrlSetBkColor(-1, $COLOR_ACCENT)
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetCursor(-1, 0)
 
-    Global $btnClean = GUICtrlCreateButton("🧹 LIMPIAR", 260, 420, 220, 50)
-    GUICtrlSetFont(-1, 12, 700, 0, "Segoe UI")
+    Global $btnClean = GUICtrlCreateButton("🧹  LIMPIAR", 280, 485, 250, 55)
+    GUICtrlSetFont(-1, 13, 700, 0, "Segoe UI")
     GUICtrlSetBkColor(-1, $COLOR_SUCCESS)
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetCursor(-1, 0)
     GUICtrlSetState(-1, $GUI_DISABLE)
 
     ; ========== FOOTER ==========
-    GUICtrlCreateLabel("", 0, 490, 500, 2)
+    GUICtrlCreateLabel("", 0, 555, 550, 65)
     GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
 
-    Local $lblFooter = GUICtrlCreateLabel("💡 Ejecutar como administrador para mejores resultados", 20, 505, 460, 20, $SS_CENTER)
-    GUICtrlSetFont(-1, 9, 400, 0, "Segoe UI")
-    GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
+    Local $lblFooter = GUICtrlCreateLabel("⚡ Ejecutar como administrador para mejores resultados", 20, 565, 510, 20, $SS_CENTER)
+    GUICtrlSetFont(-1, 9, 400, 2, "Segoe UI")
+    GUICtrlSetColor(-1, $COLOR_WARNING)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    Local $lblCopyright = GUICtrlCreateLabel("</> Developed by Enoc Colomer", 20, 525, 460, 20, $SS_CENTER)
-    GUICtrlSetFont(-1, 8, 400, 0, "Segoe UI")
-    GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
+    Local $lblCopyright = GUICtrlCreateLabel("</> Developed by Enoc Colomer  •  v" & $APP_VERSION, 20, 590, 510, 20, $SS_CENTER)
+    GUICtrlSetFont(-1, 9, 600, 0, "Segoe UI")
+    GUICtrlSetColor(-1, $COLOR_ACCENT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
     ; Mostrar ventana
@@ -231,7 +285,7 @@ Func Main()
             Case $GUI_EVENT_PRIMARYDOWN
                 ; Permitir arrastrar la ventana
                 Local $cursorInfo = GUIGetCursorInfo($hGUI)
-                If $cursorInfo[1] < 50 Then ; Solo en la barra de título
+                If $cursorInfo[1] < 60 Then ; Solo en la barra de título (header)
                     $dragging = True
                     Local $mousePos = MouseGetPos()
                     Local $winPos = WinGetPos($hGUI)
@@ -247,6 +301,9 @@ Func Main()
 
             Case $btnClean
                 CleanFiles()
+
+            Case $btnMin
+                GUISetState(@SW_MINIMIZE, $hGUI)
 
         EndSwitch
 
