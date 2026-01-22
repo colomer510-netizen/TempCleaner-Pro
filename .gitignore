@@ -1,0 +1,14 @@
+# Compiled executable
+*.exe
+
+# AutoIt backup files
+*.au3~
+*.bak
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# IDE
+.vscode/
+*.swp
