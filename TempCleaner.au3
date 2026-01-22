@@ -82,9 +82,10 @@ Func Main()
     GUISetBkColor($COLOR_BG)
 
     ; ========== HEADER ==========
-    ; Fondo del header
-    GUICtrlCreateLabel("", 0, 0, 550, 60)
+    ; Fondo del header (deshabilitado para no capturar clicks)
+    Local $headerBg = GUICtrlCreateLabel("", 0, 0, 550, 60)
     GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
+    GUICtrlSetState(-1, $GUI_DISABLE)
 
     ; Icono/Logo
     Local $lblIcon = GUICtrlCreateLabel("🧹", 15, 12, 40, 40)
@@ -108,23 +109,24 @@ Func Main()
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
     ; Botón minimizar
-    Local $btnMin = GUICtrlCreateLabel("─", 480, 5, 25, 25, $SS_CENTER)
+    Local $btnMin = GUICtrlCreateLabel("─", 480, 5, 25, 25, BitOR($SS_CENTER, $SS_NOTIFY))
     GUICtrlSetFont(-1, 12, 700, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_TEXT_DIM)
-    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+    GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
     GUICtrlSetCursor(-1, 0)
 
     ; Botón cerrar
-    Local $btnClose = GUICtrlCreateLabel("✕", 510, 5, 25, 25, $SS_CENTER)
+    Local $btnClose = GUICtrlCreateLabel("✕", 510, 5, 25, 25, BitOR($SS_CENTER, $SS_NOTIFY))
     GUICtrlSetFont(-1, 14, 400, 0, "Segoe UI")
     GUICtrlSetColor(-1, $COLOR_DANGER)
-    GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
+    GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
     GUICtrlSetCursor(-1, 0)
 
     ; ========== ESTADÍSTICAS ==========
-    ; Panel de estadísticas con fondo
-    GUICtrlCreateLabel("", 20, 75, 510, 110)
+    ; Panel de estadísticas con fondo (deshabilitado para no capturar clicks)
+    Local $statsBg = GUICtrlCreateLabel("", 20, 75, 510, 110)
     GUICtrlSetBkColor(-1, $COLOR_BG_CARD)
+    GUICtrlSetState(-1, $GUI_DISABLE)
 
     ; Icono de archivos
     Local $lblFilesIcon = GUICtrlCreateLabel("📄", 35, 90, 30, 30)
@@ -166,9 +168,10 @@ Func Main()
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    ; Panel izquierdo - Sistema
-    GUICtrlCreateLabel("", 20, 235, 250, 150)
+    ; Panel izquierdo - Sistema (deshabilitado para no capturar clicks)
+    Local $panelSystem = GUICtrlCreateLabel("", 20, 235, 250, 150)
     GUICtrlSetBkColor(-1, $COLOR_BG_CARD)
+    GUICtrlSetState(-1, $GUI_DISABLE)
 
     Local $lblSystem = GUICtrlCreateLabel("🖥️  Sistema", 30, 245, 150, 22)
     GUICtrlSetFont(-1, 11, 600, 0, "Segoe UI")
@@ -199,9 +202,10 @@ Func Main()
     GUICtrlSetColor(-1, $COLOR_TEXT)
     GUICtrlSetBkColor(-1, $GUI_BKCOLOR_TRANSPARENT)
 
-    ; Panel derecho - Navegadores
-    GUICtrlCreateLabel("", 280, 235, 250, 150)
+    ; Panel derecho - Navegadores (deshabilitado para no capturar clicks)
+    Local $panelBrowsers = GUICtrlCreateLabel("", 280, 235, 250, 150)
     GUICtrlSetBkColor(-1, $COLOR_BG_CARD)
+    GUICtrlSetState(-1, $GUI_DISABLE)
 
     Local $lblBrowsers = GUICtrlCreateLabel("🌐  Navegadores", 290, 245, 150, 22)
     GUICtrlSetFont(-1, 11, 600, 0, "Segoe UI")
@@ -255,8 +259,9 @@ Func Main()
     GUICtrlSetState(-1, $GUI_DISABLE)
 
     ; ========== FOOTER ==========
-    GUICtrlCreateLabel("", 0, 555, 550, 65)
+    Local $footerBg = GUICtrlCreateLabel("", 0, 555, 550, 65)
     GUICtrlSetBkColor(-1, $COLOR_BG_LIGHT)
+    GUICtrlSetState(-1, $GUI_DISABLE)
 
     Local $lblFooter = GUICtrlCreateLabel("⚡ Ejecutar como administrador para mejores resultados", 20, 565, 510, 20, $SS_CENTER)
     GUICtrlSetFont(-1, 9, 400, 2, "Segoe UI")
