@@ -469,12 +469,22 @@ Func CleanDirectory($path)
             Local $subResult = CleanDirectory($fullPath)
             $deletedCount += $subResult[0]
             $deletedSize += $subResult[1]
-            DirRemove($fullPath, 0) ; Intentar eliminar directorio vacío
+            DirRemove($fullPath, 1) ; Forzar eliminación del directorio
         Else ; Es archivo
             Local $fileSize = FileGetSize($fullPath)
+            ; Quitar atributos de solo lectura, sistema y oculto
+            FileSetAttrib($fullPath, "-RSH")
+            ; Intentar eliminar
             If FileDelete($fullPath) Then
                 $deletedCount += 1
                 $deletedSize += $fileSize
+            Else
+                ; Si falla, usar comando del sistema
+                RunWait(@ComSpec & ' /c del /f /q "' & $fullPath & '"', "", @SW_HIDE)
+                If Not FileExists($fullPath) Then
+                    $deletedCount += 1
+                    $deletedSize += $fileSize
+                EndIf
             EndIf
         EndIf
     WEnd
